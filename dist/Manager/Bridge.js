@@ -23,7 +23,7 @@ class Bridge extends net_ipc_1.Server {
             throw new Error('MACHINE_MISSING_OPTION - authToken must be provided - String');
         this.standAlone = (_a = options.standAlone) !== null && _a !== void 0 ? _a : false;
         this.shardsPerCluster = (_b = options.shardsPerCluster) !== null && _b !== void 0 ? _b : 1;
-        this.totalShards = options.totalShards === 'auto' ? -1 : ((_c = options.totalShards) !== null && _c !== void 0 ? _c : -1);
+        this.totalShards = options.totalShards === 'auto' ? -1 : (_c = options.totalShards) !== null && _c !== void 0 ? _c : -1;
         if (this.totalShards !== undefined && !this.standAlone) {
             if (this.totalShards !== -1) {
                 if (typeof this.totalShards !== 'number' || isNaN(this.totalShards)) {
@@ -71,7 +71,7 @@ class Bridge extends net_ipc_1.Server {
         const newClient = Object.assign(client, {
             authToken: initialData.authToken,
             shardList: [],
-            agent: (initialData.agent || 'none')
+            agent: initialData.agent || 'none',
         });
         this.clients.set(client.id, newClient);
         this._debug(`[CM => Connected][${client.id}]`, { cm: true });
@@ -82,7 +82,7 @@ class Bridge extends net_ipc_1.Server {
             return;
         if (cachedClient.agent !== 'bot')
             return this.clients.delete(cachedClient.id);
-        if (!cachedClient.shardList)
+        if (!cachedClient.shardList || !cachedClient.shardList.length)
             return this.clients.delete(cachedClient.id);
         if (!this.standAlone)
             this.shardClusterListQueue.push(cachedClient.shardList);

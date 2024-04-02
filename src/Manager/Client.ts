@@ -1,4 +1,3 @@
-
 import { ClusterManager, Cluster, evalOptions } from 'discord-hybrid-sharding';
 import { ClientReadyEvent, Client as NetIPCClient, ClientOptions as NetIPCClientOptions } from 'net-ipc';
 
@@ -7,73 +6,69 @@ import { CrossHostMessage, messageType } from '../types/shared';
 
 export interface ClientOptions extends NetIPCClientOptions {
     /**
-    * A authentication token to be able to verify the connection to the Bridge.
-    */
+     * A authentication token to be able to verify the connection to the Bridge.
+     */
     authToken: string;
 
     /**
-    * A custom settable agent name. BroadcastEvals are just executed on Agents with the name 'bot'
-    */
+     * A custom settable agent name. BroadcastEvals are just executed on Agents with the name 'bot'
+     */
     agent: string;
 
     /**
-    * If Rolling Restart should be enabled.
-    */
+     * If Rolling Restart should be enabled.
+     */
     rollingRestarts?: boolean;
 
     /**
-    * A array of Internal ShardIds, which should be spawned in the Machine.
-    */
+     * A array of Internal ShardIds, which should be spawned in the Machine.
+     */
     shardList?: number[];
 
     /**
-    * The Amount of Total Shards in all Machines.
-    */
+     * The Amount of Total Shards in all Machines.
+     */
     totalShards?: number;
-
 }
 
 export class Client extends NetIPCClient {
     /**
-    * A authentication token to be able to verify the connection to the Bridge.
-    */
+     * A authentication token to be able to verify the connection to the Bridge.
+     */
     authToken: string;
 
     /**
-    * A custom settable agent name. BroadcastEvals are just executed on Agents with the name 'bot'
-    */
+     * A custom settable agent name. BroadcastEvals are just executed on Agents with the name 'bot'
+     */
     agent: string;
 
     /**
-    * If Rolling Restart should be enabled.
-    */
+     * If Rolling Restart should be enabled.
+     */
     rollingRestarts: boolean;
 
     /**
-    * A array of Internal ShardIds, which should be spawned in the Machine.
-    */
+     * A array of Internal ShardIds, which should be spawned in the Machine.
+     */
     shardList: number[];
 
     /**
-    * The Amount of Total Shards in all Machines.
-    */
+     * The Amount of Total Shards in all Machines.
+     */
     totalShards: number;
 
     /** Cluster Manager */
-    manager?: ClusterManager & {netipc?: Client};
+    manager?: ClusterManager & { netipc?: Client };
     clusterList: never[];
     constructor(options: ClientOptions) {
         super(options);
         if (!options) throw new Error('Client required options are missing');
 
-
         this.authToken = options?.authToken;
         if (!this.authToken) throw new Error('ClIENT_MISSING_OPTION - authToken must be provided - String');
 
-
         this.agent = options?.agent;
         if (!this.agent) throw new Error('ClIENT_MISSING_OPTION - agent must be provided - Default: bot');
-
 
         this.rollingRestarts = options?.rollingRestarts ?? false;
 
@@ -115,7 +110,6 @@ export class Client extends NetIPCClient {
     private _handleMessage(message: RawMessage) {
         if (typeof message === 'string') message = JSON.parse(message);
         if (message._type === undefined) return;
-        
 
         if (message._type === messageType.SHARDLIST_DATA_UPDATE) {
             if (!this.rollingRestarts) return;
@@ -128,7 +122,7 @@ export class Client extends NetIPCClient {
                     bridge: true,
                 });
                 setTimeout(async () => {
-                    if(!this.manager) return;
+                    if (!this.manager) return;
                     const response = await this.requestShardData();
                     // if (!response?.shardList) return; -> Kill Old Clusters
                     this.manager.totalShards = response.totalShards;
@@ -165,7 +159,9 @@ export class Client extends NetIPCClient {
         if (message._type === messageType.SERVER_BROADCAST_REQUEST) {
             if (!this.manager) throw new Error(`A Cluster/Shard Manager has not been loaded to net-ipc`);
             message._type = messageType.CLIENT_BROADCAST_RESPONSE;
-            this.manager.broadcastEval(message.script, message.options)?.then(e => res(e))
+            this.manager
+                .broadcastEval(message.script, message.options)
+                ?.then(e => res(e))
                 .catch(e => res(e));
             return;
         }
@@ -178,8 +174,8 @@ export class Client extends NetIPCClient {
 
             if (!isNaN(message.options.shard)) {
                 const findCluster = Array.from(this.manager.clusters.values()).find((i: Cluster) => {
-                    if(!i) return false;
-                   return i.shardList.includes(message.options.shard);
+                    if (!i) return false;
+                    return i.shardList.includes(message.options.shard);
                 });
                 message.options.cluster = findCluster ? findCluster.id : 0;
                 // console.log(`Guild Data Cluster Request: ${message.options.cluster}`)
@@ -198,7 +194,8 @@ export class Client extends NetIPCClient {
             if (!this.manager) throw new Error(`A Cluster/Shard Manager has not been loaded to net-ipc`);
             message._type = messageType.GUILD_EVAL_RESPONSE;
             this.manager
-                .evalOnCluster(message.script, message.options)?.then(e => res(e))
+                .evalOnCluster(message.script, message.options)
+                ?.then(e => res(e))
                 .catch(e => res(e));
             return;
         }
@@ -213,8 +210,8 @@ export class Client extends NetIPCClient {
      * @param options
      * @returns The ShardList, TotalShards and other Data requested from the Bridge
      */
-    public async requestShardData(options: {maxClusters?: number, timeout?: number} = {}) {
-        const message = {_type: messageType.SHARDLIST_DATA_REQUEST, maxClusters: options.maxClusters};
+    public async requestShardData(options: { maxClusters?: number; timeout?: number } = {}) {
+        const message = { _type: messageType.SHARDLIST_DATA_REQUEST, maxClusters: options.maxClusters };
         const response = await super.request(message, options.timeout);
         this._debug(`Given Shard Data: ${JSON.stringify(response)}`, { bridge: true });
         if (!response) throw new Error(`No Response from Server`);
@@ -249,7 +246,7 @@ export class Client extends NetIPCClient {
      *   .catch(console.error);
      * @see {@link Server#broadcastEval}
      */
-    public async broadcastEval(script: string, options: evalOptions & {script?: string} = {}) {
+    public async broadcastEval(script: string, options: evalOptions & { script?: string } = {}) {
         if (options.script) script = options.script;
         if (!script || (typeof script !== 'string' && typeof script !== 'function'))
             throw new Error('Script for BroadcastEvaling has not been provided or must be a valid String!');
@@ -319,7 +316,7 @@ export class Client extends NetIPCClient {
      *   .then(result => console.log(result)) // hi
      *   .catch(console.error);
      */
-    public async requestToGuild(message: RawMessage & {guildId: string}, options?: evalOptions) {
+    public async requestToGuild(message: RawMessage & { guildId: string }, options?: evalOptions) {
         if (!message.guildId) throw new Error('GuildID has not been provided!');
         if (!message.eval) message._type = messageType.GUILD_DATA_REQUEST;
         else message._type = messageType.GUILD_EVAL_REQUEST;
@@ -337,7 +334,7 @@ export class Client extends NetIPCClient {
      *   .then(result => console.log(result)) // hi
      *   .catch(console.error);
      */
-    public async requestToClient(message: RawMessage & {clientId: string}, options?: evalOptions) {
+    public async requestToClient(message: RawMessage & { clientId: string }, options?: evalOptions) {
         if (!message.agent && !message.clientId) throw new Error('Agent has not been provided!');
         message._type = messageType.CLIENT_DATA_REQUEST;
         if (!message.options) message.options = options || {};
@@ -349,7 +346,7 @@ export class Client extends NetIPCClient {
      * @private
      */
     private rollingRestart() {
-        if(!this.manager) throw new Error("No Manager was found")
+        if (!this.manager) throw new Error('No Manager was found');
         this._debug(`[RollingRestart] ShardClusterList: ${JSON.stringify(this.manager.shardClusterList)}`);
 
         if (!this.rollingRestarts) return;
@@ -367,7 +364,7 @@ export class Client extends NetIPCClient {
      * <warn>Using this method just emits the Debug Event.</warn>
      * <info>This is usually not necessary to manually specify.</info>
      */
-    private _debug(message: string, options: {bridge?: Boolean} = {}) {
+    private _debug(message: string, options: { bridge?: Boolean } = {}) {
         let log;
         if (options.bridge) {
             log = `[Bridge => CM] ` + message;
@@ -385,12 +382,12 @@ export class Client extends NetIPCClient {
 }
 
 export interface NetIpcClientEvents {
-    ready: [listener: (data: ClientReadyEvent) => void]
-    error: [listener: (error: any) => void]
-    close: [listener: (reason: any) => void]
-    status: [listener: (status: number) => void]
-    message: [listener: (data: any) => void]
-    request: [listener: (request: any, response: (data: any) => Promise<void>) => void]
+    ready: [listener: (data: ClientReadyEvent) => void];
+    error: [listener: (error: any) => void];
+    close: [listener: (reason: any) => void];
+    status: [listener: (status: number) => void];
+    message: [listener: (data: any) => void];
+    request: [listener: (request: any, response: (data: any) => Promise<void>) => void];
 }
 
 // @ts-expect-error

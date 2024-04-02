@@ -19,7 +19,7 @@ export class Shard {
      *   .catch(console.error);
      * @see {@link CrosshostManager#broadcastEval}
      */
-    public async broadcastEval(script: string, options: evalOptions & {script?: string} = {}) {
+    public async broadcastEval(script: string, options: evalOptions & { script?: string } = {}) {
         if (!script || (typeof script !== 'string' && typeof script !== 'function'))
             throw new Error('Script for BroadcastEvaling must be a valid String or Function!');
         //options.usev13 = false;
@@ -70,7 +70,7 @@ export class Shard {
      *   .then(result => console.log(result)) // hi
      *   .catch(console.error);
      */
-    public async requestToGuild(message: RawMessage & {guildId: string}, options?: evalOptions) {
+    public async requestToGuild(message: RawMessage & { guildId: string }, options?: evalOptions) {
         if (!message.guildId) throw new Error('GuildID has not been provided!');
         if (!message.eval) message._type = messageType.GUILD_DATA_REQUEST;
         else message._type = messageType.GUILD_EVAL_REQUEST;
@@ -88,11 +88,10 @@ export class Shard {
      *   .then(result => console.log(result)) // hi
      *   .catch(console.error);
      */
-    public async requestToClient(message: RawMessage & {clientId: string}, options?: evalOptions) {
+    public async requestToClient(message: RawMessage & { clientId: string }, options?: evalOptions) {
         if (!message.agent && !message.clientId) throw new Error('Agent has not been provided!');
         message._type = messageType.CLIENT_DATA_REQUEST;
         if (!message.options) message.options = options;
         return this.request(message, { internal: true });
     }
 }
-

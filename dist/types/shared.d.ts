@@ -1,6 +1,6 @@
-import { evalOptions } from "discord-hybrid-sharding";
-import { ClientReadyEvent, Connection } from "net-ipc";
-import { IPCMessage } from "../Structures/IPCMessage";
+import { evalOptions } from 'discord-hybrid-sharding';
+import { ClientReadyEvent, Connection } from 'net-ipc';
+import { IPCMessage } from '../Structures/IPCMessage';
 export interface BroadcastEvalOptions extends evalOptions {
     filter?(client: {
         agent: string;

@@ -1,11 +1,11 @@
-import { Serializable } from "child_process";
-import { Client } from "../../Manager/Client";
-import { messageType } from "../../types/shared";
+import { Serializable } from 'child_process';
+import { Client } from '../../Manager/Client';
+import { messageType } from '../../types/shared';
 
 export class RemoteClientCache {
-    options: { path: string; maxSize: number; };
+    options: { path: string; maxSize: number };
     client: Client;
-    constructor(client: Client, options: { path: string, maxSize: number }) {
+    constructor(client: Client, options: { path: string; maxSize: number }) {
         this.options = options;
         this.client = client;
     }

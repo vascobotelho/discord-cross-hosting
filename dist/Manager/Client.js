@@ -90,7 +90,8 @@ class Client extends net_ipc_1.Client {
             if (!this.manager)
                 throw new Error(`A Cluster/Shard Manager has not been loaded to net-ipc`);
             message._type = shared_1.messageType.CLIENT_BROADCAST_RESPONSE;
-            (_a = this.manager.broadcastEval(message.script, message.options)) === null || _a === void 0 ? void 0 : _a.then(e => res(e)).catch(e => res(e));
+            (_a = this.manager
+                .broadcastEval(message.script, message.options)) === null || _a === void 0 ? void 0 : _a.then(e => res(e)).catch(e => res(e));
             return;
         }
         if (message._type === shared_1.messageType.GUILD_DATA_REQUEST) {
@@ -243,7 +244,7 @@ class Client extends net_ipc_1.Client {
     }
     rollingRestart() {
         if (!this.manager)
-            throw new Error("No Manager was found");
+            throw new Error('No Manager was found');
         this._debug(`[RollingRestart] ShardClusterList: ${JSON.stringify(this.manager.shardClusterList)}`);
         if (!this.rollingRestarts)
             return;

@@ -2,36 +2,36 @@ import { Connection, Server, ServerOptions } from 'net-ipc';
 
 import { IPCMessage, RawMessage } from '../Structures/IPCMessage';
 import { chunkArray, evalOptions, fetchRecommendedShards, shardIdForGuildId } from 'discord-hybrid-sharding';
-import { BridgeEvents, BroadcastEvalOptions, messageType} from '../types/shared';
+import { BridgeEvents, BroadcastEvalOptions, messageType } from '../types/shared';
 
 export interface BridgeOptions extends ServerOptions {
     /**
-    * A User chosen Token for basic Authorization, when tls is disabled.
-    */
+     * A User chosen Token for basic Authorization, when tls is disabled.
+     */
     authToken: string;
     /**
-    * If the Package will be used in standalone mode
-    */
+     * If the Package will be used in standalone mode
+     */
     standAlone?: Boolean;
     /**
-    * The Total Amount of Shards per Clusters
-    */
+     * The Total Amount of Shards per Clusters
+     */
     shardsPerCluster?: number;
     /**
-    * The Total Amount of Shards
-    */
+     * The Total Amount of Shards
+     */
     totalShards?: number | 'auto';
     /**
-    * The Total Amount of Machines
-    */
+     * The Total Amount of Machines
+     */
     totalMachines: number;
     /**
-    * Your Discord Bot token
-    */
+     * Your Discord Bot token
+     */
     token?: string;
     /**
-    * The shardList, which will be hosted by all Machines
-    */
+     * The shardList, which will be hosted by all Machines
+     */
     shardList?: number[];
 }
 
@@ -43,40 +43,40 @@ export interface BridgeClient extends Connection {
 
 export class Bridge extends Server {
     /**
-    * A User chosen Token for basic Authorization, when tls is disabled.
-    */
+     * A User chosen Token for basic Authorization, when tls is disabled.
+     */
     authToken: string;
     /**
-    * If the Package will be used in standalone mode
-    */
+     * If the Package will be used in standalone mode
+     */
     standAlone: Boolean;
     /**
-    * The Total Amount of Shards per Clusters
-    */
+     * The Total Amount of Shards per Clusters
+     */
     shardsPerCluster: number;
     /**
-    * The Total Amount of Shards
-    */
+     * The Total Amount of Shards
+     */
     totalShards: number;
     /**
-    * The Total Amount of Machines
-    */
+     * The Total Amount of Machines
+     */
     totalMachines: number;
     /**
-    * Your Discord Bot token
-    */
+     * Your Discord Bot token
+     */
     token?: string;
     /**
-    * The shardList, which will be hosted by all Machines
-    */
+     * The shardList, which will be hosted by all Machines
+     */
     shardList: number[];
     /**
-    * The shardCLusterList, which will be hosted by all Machines
-    */
+     * The shardCLusterList, which will be hosted by all Machines
+     */
     shardClusterList: number[][];
     /**
-    * The shardCLusterLisQueue, the shardList which has to be spawned on the appropriated Machine
-    */
+     * The shardCLusterLisQueue, the shardList which has to be spawned on the appropriated Machine
+     */
     shardClusterListQueue: number[][];
     clients: Map<string, BridgeClient>;
     constructor(options: BridgeOptions) {
@@ -90,8 +90,7 @@ export class Bridge extends Server {
 
         this.shardsPerCluster = options.shardsPerCluster ?? 1;
 
-
-        this.totalShards = options.totalShards === 'auto' ? -1 : (options.totalShards ?? -1);
+        this.totalShards = options.totalShards === 'auto' ? -1 : options.totalShards ?? -1;
         if (this.totalShards !== undefined && !this.standAlone) {
             if (this.totalShards !== -1) {
                 if (typeof this.totalShards !== 'number' || isNaN(this.totalShards)) {
@@ -105,7 +104,6 @@ export class Bridge extends Server {
             }
         }
 
-
         this.totalMachines = options.totalMachines;
         if (!this.totalMachines)
             throw new Error('MISSING_OPTION - Total Machines - Provide the Amount of your Machines');
@@ -116,9 +114,7 @@ export class Bridge extends Server {
             throw new TypeError('MACHINE_INVALID_OPTION - Machine ID must be a number.');
         }
 
-
         this.token = options.token ? options.token.replace(/^Bot\s*/i, '') : undefined;
-
 
         this.shardList = options.shardList ?? [];
 
@@ -151,18 +147,18 @@ export class Bridge extends Server {
     /**
      * Handle the Error Event of the Bridge
      */
-    private _handleError(_error: Error) { }
+    private _handleError(_error: Error) {}
 
     /**
      * Handles the Connection of new Clients
      */
-    private _handleConnect(client: Connection, initialData: { authToken?: string, agent?: string }) {
+    private _handleConnect(client: Connection, initialData: { authToken?: string; agent?: string }) {
         if (initialData?.authToken !== this.authToken) return client.close('ACCESS DENIED').catch(e => console.log(e));
 
         const newClient: BridgeClient = Object.assign(client, {
             authToken: initialData.authToken,
             shardList: [],
-            agent: (initialData.agent || 'none')
+            agent: initialData.agent || 'none',
         });
 
         this.clients.set(client.id as string, newClient);
@@ -191,13 +187,13 @@ export class Bridge extends Server {
         if (typeof message === 'string') message = JSON.parse(message);
         if (message?._type === undefined) return;
         const client = this.clients.get(_client.id);
-        if(!client) return;
+        if (!client) return;
 
         if (message._type === messageType.CLIENT_SHARDLIST_DATA_CURRENT) {
             if (!this.shardClusterListQueue[0]) return;
             client.shardList = message.shardList;
             this.clients.set(client.id, client);
- 
+
             const checkShardListPositionInQueue = this.shardClusterListQueue.findIndex(
                 x => JSON.stringify(x) === JSON.stringify(message.shardList),
             );
@@ -220,11 +216,11 @@ export class Bridge extends Server {
     /**
      * Handles the Request Event of the Bridge and executes Requests based on the Message
      */
-    private _handleRequest(message: RawMessage, res: (data: any)=> Promise<void>, _client: Connection) {
+    private _handleRequest(message: RawMessage, res: (data: any) => Promise<void>, _client: Connection) {
         if (typeof message === 'string') message = JSON.parse(message);
         if (message?._type === undefined) return;
         const client = this.clients.get(_client.id);
-        if (!client) return res({error: 'Client not registered on Bridges'});
+        if (!client) return res({ error: 'Client not registered on Bridges' });
         // BroadcastEval
         if (message._type === messageType.CLIENT_BROADCAST_REQUEST) {
             const clients = Array.from(this.clients.values()).filter(
@@ -242,7 +238,6 @@ export class Bridge extends Server {
 
         // Shard Data Request
         if (message._type === messageType.SHARDLIST_DATA_REQUEST) {
-
             if (!this.shardClusterListQueue[0]) return res([]);
 
             // Check if Client has a Custom Cluster Strategy
@@ -286,8 +281,8 @@ export class Bridge extends Server {
 
         // Guild Data Request
         if (message._type === messageType.GUILD_DATA_REQUEST) {
-            if(!message.guildId) return res({error: 'Missing guildId for request to Guild'});
-            type newMessage = RawMessage & {guildId: string};
+            if (!message.guildId) return res({ error: 'Missing guildId for request to Guild' });
+            type newMessage = RawMessage & { guildId: string };
             this.requestToGuild(message as newMessage)
                 .then(e => res(e))
                 .catch(e => res({ ...message, error: e }));
@@ -328,8 +323,8 @@ export class Bridge extends Server {
             if (!this.token)
                 throw new Error(
                     'CLIENT_MISSING_OPTION - ' +
-                    'A token must be provided when getting shard count on auto -' +
-                    'Add the Option token: DiscordBOTTOKEN'
+                        'A token must be provided when getting shard count on auto -' +
+                        'Add the Option token: DiscordBOTTOKEN',
                 );
             this.totalShards = await fetchRecommendedShards(this.token, 1000);
             this.shardList = Array.from(Array(this.totalShards).keys());
@@ -351,8 +346,8 @@ export class Bridge extends Server {
         if (this.shardList.some(shardID => shardID >= this.totalShards)) {
             throw new RangeError(
                 'CLIENT_INVALID_OPTION - ' +
-                'Amount of Internal Shards - ' +
-                'bigger than the highest shardID in the shardList option.'
+                    'Amount of Internal Shards - ' +
+                    'bigger than the highest shardID in the shardList option.',
             );
         }
 
@@ -370,7 +365,7 @@ export class Bridge extends Server {
             totalShards: this.totalShards,
             shardClusterList: this.shardClusterList,
             _type: messageType.SHARDLIST_DATA_UPDATE,
-        }
+        };
         for (const client of clients) client.send(message);
         this._debug(`[SHARDLIST_DATA_UPDATE][${clients.length}] To all connected Clients`, { cm: true });
 
@@ -396,7 +391,7 @@ export class Bridge extends Server {
             throw new Error('Script for BroadcastEvaling has not been provided or must be a valid String!');
         script = typeof script === 'function' ? `(${script})(this, ${JSON.stringify(options.context)})` : script;
 
-        if(!options) options = {filter: undefined}
+        if (!options) options = { filter: undefined };
 
         const message = { script, options, _type: messageType.SERVER_BROADCAST_REQUEST };
         const clients = Array.from(this.clients.values()).filter(options.filter || (c => c.agent === 'bot'));
@@ -415,7 +410,7 @@ export class Bridge extends Server {
      *   .then(result => console.log(result)) // hi
      *   .catch(console.error);
      */
-    public async requestToGuild(message: RawMessage & {guildId: string}, options?: evalOptions) {
+    public async requestToGuild(message: RawMessage & { guildId: string }, options?: evalOptions) {
         // console.log(message)
         if (!message?.guildId) throw new Error('GuildID has not been provided!');
         const internalShard = shardIdForGuildId(message.guildId, this.totalShards);
@@ -441,7 +436,7 @@ export class Bridge extends Server {
      * <info>This is usually not necessary to manually specify.</info>
      * @returns  returns the log message
      */
-    private _debug(message: string, options?: {cm: Boolean}) {
+    private _debug(message: string, options?: { cm: Boolean }) {
         let log;
         if (options?.cm) {
             log = `[Bridge => CM] ` + message;

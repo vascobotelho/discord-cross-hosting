@@ -1,12 +1,12 @@
-import { evalOptions } from "discord-hybrid-sharding";
-import { ClientReadyEvent, Connection } from "net-ipc";
-import { IPCMessage } from "../Structures/IPCMessage";
+import { evalOptions } from 'discord-hybrid-sharding';
+import { ClientReadyEvent, Connection } from 'net-ipc';
+import { IPCMessage } from '../Structures/IPCMessage';
 
 export interface BroadcastEvalOptions extends evalOptions {
-    filter?(client: {agent: string}): Boolean;
+    filter?(client: { agent: string }): Boolean;
 }
 
-export enum messageType{
+export enum messageType {
     'CUSTOM_REQUEST',
     'CUSTOM_MESSAGE',
     'CUSTOM_REPLY',
@@ -53,7 +53,7 @@ export interface BridgeEvents {
     clientRequest: [message: IPCMessage, client: BridgeConnection];
     error: [error: any];
     message: [message: any, client: Connection];
-    request: [request: any, res: (d:any) => Promise<void>, client: Connection]
+    request: [request: any, res: (d: any) => Promise<void>, client: Connection];
 }
 
 export interface ClientEvents {
@@ -62,7 +62,7 @@ export interface ClientEvents {
     bridgeMessage: [message: IPCMessage, client: BridgeConnection];
     bridgeRequest: [message: IPCMessage, client: BridgeConnection | this];
     debug: [message: string];
-    request: [request: any, res: (d:any) => Promise<void>]
+    request: [request: any, res: (d: any) => Promise<void>];
 }
 
 interface BridgeConnection extends Connection {

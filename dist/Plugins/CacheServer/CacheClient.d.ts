@@ -1,4 +1,4 @@
-import { Client } from "../../Manager/Client";
+import { Client } from '../../Manager/Client';
 import { RemoteClientCache } from './RemoteClientCache';
 export declare class CacheClient {
     client: Client;

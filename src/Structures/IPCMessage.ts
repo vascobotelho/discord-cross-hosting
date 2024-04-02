@@ -3,9 +3,9 @@ import type { Client } from '../Manager/Client';
 import type { BridgeClient } from '../Manager/Bridge';
 
 export interface RawMessage {
-    nonce?: string,
-    _type?: number,
-    [x: string]: any
+    nonce?: string;
+    _type?: number;
+    [x: string]: any;
 }
 
 export class BaseMessage {
@@ -60,8 +60,8 @@ export class IPCMessage extends BaseMessage {
         this.raw = new BaseMessage(message).toJSON();
 
         /**
-        * Replies to the given Request
-        */
+         * Replies to the given Request
+         */
         this.res = res;
     }
 
@@ -88,7 +88,12 @@ export class IPCMessage extends BaseMessage {
      */
     public async reply(message: object) {
         if (typeof message !== 'object') throw new TypeError('The Message has to be a object');
-        const baseMessage = new BaseMessage({ ...message, _type: messageType.CUSTOM_REPLY, nonce: this.nonce, _result: message });
+        const baseMessage = new BaseMessage({
+            ...message,
+            _type: messageType.CUSTOM_REPLY,
+            nonce: this.nonce,
+            _result: message,
+        });
         return this.res?.(baseMessage.toJSON());
     }
 }

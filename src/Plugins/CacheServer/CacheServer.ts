@@ -1,14 +1,14 @@
 // @ts-check
-import { RemoteServerCache }from './RemoteServerCache';
+import { RemoteServerCache } from './RemoteServerCache';
 import { messageType } from '../../types/shared';
 import { Bridge } from '../../Manager/Bridge';
 import { RawMessage } from 'discord-hybrid-sharding';
 import { Connection } from 'net-ipc';
 export class CacheServer {
     server: Bridge;
-    path: { path: string; maxSize: number; }[];
+    path: { path: string; maxSize: number }[];
     cache: ReturnType<CacheServer['_buildCachePaths']>;
-    constructor(server: Bridge, options: { path: Array<{ path: string, maxSize: number }> }) {
+    constructor(server: Bridge, options: { path: Array<{ path: string; maxSize: number }> }) {
         this.server = server;
         this.path = options.path || [];
         this.cache = this._buildCachePaths(this.path);
@@ -29,7 +29,7 @@ export class CacheServer {
             }
             if (message._type === messageType.SERVER_CACHE_GET_REQUEST) {
                 return this._handleCacheGet(message, res);
-            } 
+            }
             if (message._type === messageType.SERVER_CACHE_DELETE_REQUEST) {
                 return this._handleCacheDelete(message, res);
             }
@@ -70,8 +70,8 @@ export class CacheServer {
         res({ success: true });
     }
 
-    _buildCachePaths(path: { path: string, maxSize: number }[]) {
-        const cache: {[x: string]: RemoteServerCache} = {};
+    _buildCachePaths(path: { path: string; maxSize: number }[]) {
+        const cache: { [x: string]: RemoteServerCache } = {};
         for (let i = 0; i < path.length; i++) {
             /*
              * path.path
@@ -80,9 +80,9 @@ export class CacheServer {
              * path.properties
              * path.serializeStrategy
              */
-            if(!path[i]) continue;
+            if (!path[i]) continue;
             const key = path[i]?.path as string;
-            if(path[i]) cache[key] = new RemoteServerCache(this, path[i]!);
+            if (path[i]) cache[key] = new RemoteServerCache(this, path[i]!);
         }
 
         // @ts-expect-error
@@ -90,4 +90,3 @@ export class CacheServer {
         return cache;
     }
 }
-
