@@ -1,7 +1,6 @@
 
 import { ClusterManager, Cluster, evalOptions } from 'discord-hybrid-sharding';
-import { ClientEvents } from 'discord.js';
-import { Client as NetIPCClient, ClientOptions as NetIPCClientOptions } from 'net-ipc';
+import { ClientReadyEvent, Client as NetIPCClient, ClientOptions as NetIPCClientOptions } from 'net-ipc';
 
 import { IPCMessage, BaseMessage, RawMessage } from '../Structures/IPCMessage';
 import { CrossHostMessage, messageType } from '../types/shared';
@@ -85,8 +84,9 @@ export class Client extends NetIPCClient {
 
         this.on('ready', this._handleReady.bind(this));
 
-        this.on('message', this._handleMessage.bind(this) as any);
-         // @ts-expect-error
+        this.on('message', this._handleMessage.bind(this));
+
+        // @ts-ignore
         this.on('request', this._handleRequest.bind(this));
     }
 
@@ -384,7 +384,16 @@ export class Client extends NetIPCClient {
     }
 }
 
+export interface NetIpcClientEvents {
+    ready: [listener: (data: ClientReadyEvent) => void]
+    error: [listener: (error: any) => void]
+    close: [listener: (reason: any) => void]
+    status: [listener: (status: number) => void]
+    message: [listener: (data: any) => void]
+    request: [listener: (request: any, response: (data: any) => Promise<void>) => void]
+}
+
 // @ts-expect-error
 export interface Client extends NetIPCClient {
-    on<T extends keyof ClientEvents>(event: T, listener: (...args: ClientEvents[T]) => any): this;
+    on<T extends keyof NetIpcClientEvents>(event: T, listener: (...args: NetIpcClientEvents[T]) => any): this;
 }

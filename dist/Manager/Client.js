@@ -131,11 +131,11 @@ class Client extends net_ipc_1.Client {
             emitMessage = message;
         this.emit('bridgeRequest', emitMessage, this);
     }
-    requestShardData(options = {}) {
+    requestShardData() {
         const _super = Object.create(null, {
             request: { get: () => super.request }
         });
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter(this, arguments, void 0, function* (options = {}) {
             const message = { _type: shared_1.messageType.SHARDLIST_DATA_REQUEST, maxClusters: options.maxClusters };
             const response = yield _super.request.call(this, message, options.timeout);
             this._debug(`Given Shard Data: ${JSON.stringify(response)}`, { bridge: true });
@@ -156,11 +156,11 @@ class Client extends net_ipc_1.Client {
         this.manager.netipc = this;
         return this.manager;
     }
-    broadcastEval(script, options = {}) {
+    broadcastEval(script_1) {
         const _super = Object.create(null, {
             request: { get: () => super.request }
         });
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter(this, arguments, void 0, function* (script, options = {}) {
             if (options.script)
                 script = options.script;
             if (!script || (typeof script !== 'string' && typeof script !== 'function'))
@@ -170,11 +170,11 @@ class Client extends net_ipc_1.Client {
             return _super.request.call(this, message, message.options.timeout);
         });
     }
-    send(message, options = {}) {
+    send(message_1) {
         const _super = Object.create(null, {
             send: { get: () => super.send }
         });
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter(this, arguments, void 0, function* (message, options = {}) {
             if (!message)
                 throw new Error('Request has not been provided!');
             if (typeof message === 'string' && !options.internal)
@@ -193,11 +193,11 @@ class Client extends net_ipc_1.Client {
             return _super.send.call(this, JSON.stringify(message));
         });
     }
-    request(message, options = {}) {
+    request(message_1) {
         const _super = Object.create(null, {
             request: { get: () => super.request }
         });
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter(this, arguments, void 0, function* (message, options = {}) {
             if (!message)
                 throw new Error('Request has not been provided!');
             if (typeof message === 'string' && !options.internal)

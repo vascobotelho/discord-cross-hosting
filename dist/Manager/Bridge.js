@@ -208,8 +208,8 @@ class Bridge extends net_ipc_1.Server {
         this.emit('clientRequest', emitMessage, client);
     }
     initializeShardData() {
-        var _a;
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             if (this.totalShards === -1 && ((_a = this.shardList) === null || _a === void 0 ? void 0 : _a.length) === 0) {
                 if (!this.token)
                     throw new Error('CLIENT_MISSING_OPTION - ' +

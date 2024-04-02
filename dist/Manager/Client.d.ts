@@ -1,6 +1,5 @@
 import { ClusterManager, evalOptions } from 'discord-hybrid-sharding';
-import { ClientEvents } from 'discord.js';
-import { Client as NetIPCClient, ClientOptions as NetIPCClientOptions } from 'net-ipc';
+import { ClientReadyEvent, Client as NetIPCClient, ClientOptions as NetIPCClientOptions } from 'net-ipc';
 import { RawMessage } from '../Structures/IPCMessage';
 import { CrossHostMessage } from '../types/shared';
 export interface ClientOptions extends NetIPCClientOptions {
@@ -46,7 +45,15 @@ export declare class Client extends NetIPCClient {
     private rollingRestart;
     private _debug;
 }
+export interface NetIpcClientEvents {
+    ready: [listener: (data: ClientReadyEvent) => void];
+    error: [listener: (error: any) => void];
+    close: [listener: (reason: any) => void];
+    status: [listener: (status: number) => void];
+    message: [listener: (data: any) => void];
+    request: [listener: (request: any, response: (data: any) => Promise<void>) => void];
+}
 export interface Client extends NetIPCClient {
-    on<T extends keyof ClientEvents>(event: T, listener: (...args: ClientEvents[T]) => any): this;
+    on<T extends keyof NetIpcClientEvents>(event: T, listener: (...args: NetIpcClientEvents[T]) => any): this;
 }
 //# sourceMappingURL=Client.d.ts.map

@@ -1,9 +1,9 @@
-import { ClusterClient, evalOptions } from 'discord-hybrid-sharding';
+import { ClusterClient, DjsDiscordClient, evalOptions } from 'discord-hybrid-sharding';
 import { RawMessage } from '../Structures/IPCMessage';
 import { CrossHostMessage } from '../types/shared';
 export declare class Shard {
-    shard: ClusterClient;
-    constructor(shard: ClusterClient);
+    shard: ClusterClient<DjsDiscordClient>;
+    constructor(shard: ClusterClient<DjsDiscordClient>);
     broadcastEval(script: string, options?: evalOptions & {
         script?: string;
     }): Promise<void | any[]>;

@@ -29,4 +29,4 @@ var messageType;
     messageType[messageType["SERVER_CACHE_DELETE_RESPONSE"] = 37] = "SERVER_CACHE_DELETE_RESPONSE";
     messageType[messageType["SERVER_CACHE_CLEAR_REQUEST"] = 38] = "SERVER_CACHE_CLEAR_REQUEST";
     messageType[messageType["SERVER_CACHE_CLEAR_RESPONSE"] = 39] = "SERVER_CACHE_CLEAR_RESPONSE";
-})(messageType = exports.messageType || (exports.messageType = {}));
+})(messageType || (exports.messageType = messageType = {}));

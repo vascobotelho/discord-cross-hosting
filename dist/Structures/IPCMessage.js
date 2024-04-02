@@ -55,8 +55,8 @@ class IPCMessage extends BaseMessage {
         });
     }
     reply(message) {
-        var _a;
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             if (typeof message !== 'object')
                 throw new TypeError('The Message has to be a object');
             const baseMessage = new BaseMessage(Object.assign(Object.assign({}, message), { _type: discord_hybrid_sharding_1.messageType.CUSTOM_REPLY, nonce: this.nonce, _result: message }));

@@ -16,8 +16,8 @@ class Shard {
     constructor(shard) {
         this.shard = shard;
     }
-    broadcastEval(script, options = {}) {
-        return __awaiter(this, void 0, void 0, function* () {
+    broadcastEval(script_1) {
+        return __awaiter(this, arguments, void 0, function* (script, options = {}) {
             if (!script || (typeof script !== 'string' && typeof script !== 'function'))
                 throw new Error('Script for BroadcastEvaling must be a valid String or Function!');
             options.script =
@@ -25,8 +25,8 @@ class Shard {
             return this.shard.evalOnManager(`this.netipc.broadcastEval('', ${JSON.stringify(options)})`).catch(console.log);
         });
     }
-    send(message, options = {}) {
-        return __awaiter(this, void 0, void 0, function* () {
+    send(message_1) {
+        return __awaiter(this, arguments, void 0, function* (message, options = {}) {
             if (!message)
                 throw new Error('Request has not been provided!');
             if (typeof message !== 'object')
@@ -38,8 +38,8 @@ class Shard {
             return this.shard.evalOnManager(`this.netipc.send('${JSON.stringify(message)}', {resolve: false})`);
         });
     }
-    request(message, options = {}) {
-        return __awaiter(this, void 0, void 0, function* () {
+    request(message_1) {
+        return __awaiter(this, arguments, void 0, function* (message, options = {}) {
             if (!message)
                 throw new Error('Request has not been provided!');
             if (typeof message !== 'object' && !options.internal)
