@@ -3,4 +3,5 @@ test
 .vscode
 .github
 examples
+assets
 package-lock.json
