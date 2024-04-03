@@ -259,13 +259,11 @@ class Bridge extends net_ipc_1.Server {
     parseClusterList(ClusterList) {
         return (0, discord_hybrid_sharding_1.chunkArray)(ClusterList, Math.ceil(ClusterList.length / this.totalMachines));
     }
-    broadcastEval(script, options) {
-        return __awaiter(this, void 0, void 0, function* () {
+    broadcastEval(script_1) {
+        return __awaiter(this, arguments, void 0, function* (script, options = { filter: undefined }) {
             if (!script || (typeof script !== 'string' && typeof script !== 'function'))
                 throw new Error('Script for BroadcastEvaling has not been provided or must be a valid String!');
             script = typeof script === 'function' ? `(${script})(this, ${JSON.stringify(options.context)})` : script;
-            if (!options)
-                options = { filter: undefined };
             const message = { script, options, _type: shared_1.messageType.SERVER_BROADCAST_REQUEST };
             const clients = Array.from(this.clients.values()).filter(options.filter || (c => c.agent === 'bot'));
             const promises = [];

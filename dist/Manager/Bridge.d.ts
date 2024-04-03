@@ -36,7 +36,7 @@ export declare class Bridge extends Server {
     private _handleRequest;
     initializeShardData(): Promise<number[][]>;
     parseClusterList(ClusterList: number[][]): any[][];
-    broadcastEval(script: string, options: BroadcastEvalOptions): Promise<any[]>;
+    broadcastEval(script: string, options?: BroadcastEvalOptions): Promise<any[]>;
     requestToGuild(message: RawMessage & {
         guildId: string;
     }, options?: evalOptions): Promise<any>;
