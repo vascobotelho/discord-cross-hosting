@@ -386,13 +386,10 @@ export class Bridge extends Server {
      *   .then(results => console.log(`${results.reduce((prev, val) => prev + val, 0)} total guilds`))
      *   .catch(console.error);
      */
-    public async broadcastEval(script: string, options: BroadcastEvalOptions) {
+    public async broadcastEval(script: string, options: BroadcastEvalOptions = { filter: undefined }) {
         if (!script || (typeof script !== 'string' && typeof script !== 'function'))
             throw new Error('Script for BroadcastEvaling has not been provided or must be a valid String!');
         script = typeof script === 'function' ? `(${script})(this, ${JSON.stringify(options.context)})` : script;
-
-        if (!options) options = { filter: undefined };
-
         const message = { script, options, _type: messageType.SERVER_BROADCAST_REQUEST };
         const clients = Array.from(this.clients.values()).filter(options.filter || (c => c.agent === 'bot'));
         const promises = [];
